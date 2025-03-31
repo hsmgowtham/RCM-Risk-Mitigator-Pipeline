@@ -1,0 +1,11 @@
+database,datasource,tablename,loadtype,watermark,is_active,targetpath
+rcm_hospital-a,hos-a,dbo.encounters,Incremental,ModifiedDate,0,hosa
+rcm_hospital-a,hos-a,dbo.patients,Incremental,ModifiedDate,0,hosa
+rcm_hospital-a,hos-a,dbo.transactions,Incremental,ModifiedDate,0,hosa
+rcm_hospital-a,hos-a,dbo.providers,Full,,0,hosa
+rcm_hospital-a,hos-a,dbo.departments,Full,,0,hosa
+rcm_hospital-b,hos-b,dbo.encounters,Incremental,ModifiedDate,0,hosb
+rcm_hospital-b,hos-b,dbo.patients,Incremental,Updated_Date,1,hosb
+rcm_hospital-b,hos-b,dbo.transactions,Incremental,ModifiedDate,0,hosb
+rcm_hospital-b,hos-b,dbo.providers,Full,,0,hosb
+rcm_hospital-b,hos-b,dbo.departments,Full,,0,hosb
