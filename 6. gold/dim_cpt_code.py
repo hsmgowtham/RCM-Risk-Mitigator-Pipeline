@@ -13,6 +13,7 @@
 # MAGIC code_status string,
 # MAGIC refreshed_at timestamp
 # MAGIC )
+# MAGIC Using DELTA
 
 # COMMAND ----------
 

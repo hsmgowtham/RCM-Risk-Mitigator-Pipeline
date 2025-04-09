@@ -14,6 +14,7 @@
 # MAGIC     address STRING,
 # MAGIC     datasource STRING
 # MAGIC )
+# MAGIC Using DELTA
 
 # COMMAND ----------
 

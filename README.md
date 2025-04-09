@@ -1,69 +1,124 @@
-# RCM-Risk-Mitigator-Pipeline
-A data-driven project to analyze and improve healthcare revenue cycle performance by identifying high-risk accounts receivables and optimizing patient payment timelines.
+# RCM Risk Mitigator Pipeline
 
-**Domain:** Health Care **Revenue Cycle Management** (RCM)
+## Project Overview
 
-**RCM** is the process used by hospitals to manage the financial aspect from the time the patient schedules an appointment until the provider gets paid.
+In the healthcare industry, **Accounts Receivable (AR)** plays a critical role in determining the financial health of hospitals and clinics. When AR goes uncollected — especially past **90 days**, it can significantly disrupt cash flow and impact patient services.
 
-### Process:
-1. The patient visits the hospital.
-2. Patient details are collected (Mainly insurance). This ensures the provider (hospital) knows who will pay (patient, insurer, or both) for the services.
-3. Services are provided.
-4. Billing occurs: The hospital generates a bill.
-5. Claims are reviewed: The insurance company reviews the bill (accept in full, partial, or decline).
-6. Payments and follow-ups: The insurer pays, and the patient may cover the remaining balance.
-7. Tracking and improvements: Continuous monitoring to optimize financial health.
+> Industry statistics:
+> - 93.4% collected within 30 days  
+> - 85.2% within 60 days  
+> - Only 73.1% within 90 days
 
-**RCM** ensures hospitals can provide quality care while maintaining financial stability.
+To mitigate this risk, healthcare providers need real-time insights into AR metrics and other **Revenue Cycle Management (RCM)** KPIs.
 
 ---
 
-## KPI
+## Solution
 
-### Two Key Aspects of RCM:
-- **Accounts Receivable (AR):** Payments hospitals need to collect.
-- **Accounts Payable:** Payments hospitals need to make.
+This project delivers an **end-to-end cloud-based data pipeline** to monitor and analyze RCM metrics like:
 
-### Risk Factors in AR:
-Patient payments are a significant risk. Poor AR management can strain cash flow and result in lost revenue. 
+- **Accounts Receivable (AR)** aging
+- **Days in AR**
+- **Net Collection Rate**
+- **Claim acceptance and denial trends**
+- **Provider payment performance**
 
-### Common Scenarios Where Patients Bear the Payment Burden:
-- **Low Insurance Coverage** – High out-of-pocket costs for patients.
-- **Private Clinics** – Certain insurance policies may not be accepted.
-- **Dental Treatments** – Insurance often does not cover these services.
-
-### Objectives for Healthy AR:
-1. **Maximize Collections** – Ensure payments are received from patients.
-2. **Minimize Collection Period** – Reduce delays in payments.
-
-The probability of collecting the full amount decreases over time:
-- **93%** of payments are collected within **30 days**.
-- **85%** of payments are collected within **60 days**.
-- **73%** of payments are collected within **90 days**.
+The pipeline is built using **Medallion Architecture** (Landing → Bronze → Silver → Gold), ensuring **data quality, scalability**, and **reliability**.
 
 ---
 
-## KPI (Key Performance Indicators) to Measure AR Health
+## Architecture & Workflow
 
-### 1. **AR Aging > 90 Days**
-   - AR older than 90 days is likely to remain uncollected.
-   - **Example Calculation:**
-     - Total AR: **$1,000,000**
-     - AR > 90 days: **$100,000**
-     - **AR > 90 days / Total AR = 10%**
-   - If AR > 90 days remains around **10% or higher**, it indicates inefficiencies in collections.
-   - **Action:** Investigate the cause and address process gaps.
+### **Medallion Architecture Breakdown:**
 
-### 2. **Days in AR**
-   - Measures how long it takes to collect outstanding revenue.
-   - **Example Calculation:**
-     - Revenue: **$1M in 100 days** → **$10,000 per day**
-     - Outstanding AR: **$400,000**
-     - **Estimated Collection Time = 400,000 / 10,000 = 40 days**
-   - If AR extends beyond this timeframe, alerts should be triggered for intervention.
+- **Landing Layer**  
+  Raw flat files from APIs, Azure SQL, and other external sources.
+
+- **Bronze Layer**  
+  Data ingestion using **Azure Data Factory (ADF)** into **ADLS Gen2**.
+
+- **Silver Layer**  
+  Transformations in **Azure Databricks (PySpark)**:
+  - Schema unification
+  - SCD2 for patient records
+  - Data quality checks (nulls, type mismatch)
+  - Metadata logging
+
+- **Gold Layer**  
+  Analytical **Fact/Dim models** for KPIs and dashboards.
+---
+### High Level Design
+<img width="909" alt="image" src="https://github.com/user-attachments/assets/9f598991-202e-4f10-8237-ded445dafe3a" />
+
+---
+### Key Features
+
+- **Metadata-driven** design with external configuration files
+- **Supports full & incremental loads** via parameterization
+- **Retry & timeout logic** for pipeline robustness
+- **Toggle components on/off** dynamically with config flags
+
 
 ---
 
-## References
-- [Healthcare Accounts Receivable Management](https://mdmanagementgroup.com/healthcare-accounts-receivable-management/)
-- [Revenue Cycle Metrics & RCM KPIs](https://www.mdclarity.com/blog/revenue-cycle-metrics-rcm-kpis/)
+## Tech Stack
+
+| Tool/Service       | Purpose                         |
+|--------------------|----------------------------------|
+| **Azure Data Factory** | Data ingestion (ETL)              |
+| **Azure Databricks (PySpark)** | Transformations & aggregations     |
+| **Azure SQL Database** | Source system for structured data |
+| **Delta Lake**           | Storage format for Silver/Gold     |
+| **ADLS Gen2**            | Cloud data lake for raw & curated layers |
+| **SQL, Python**          | Logic & analytics                  |
+| **Git**                  | Version control                    |
+
+---
+
+## Sample KPIs & Queries
+
+### Revenue & Provider Performance
+
+- **Total Charges per Provider by Department**
+- **Top 10 Providers by Revenue**
+- **Monthly Billing Trends**
+
+### Payment Collection Efficiency
+
+- **Collection % by Provider**
+- **Monthly Payment Collection Trend**
+
+### Accounts Receivable (AR) Analysis
+
+- **AR Aging Buckets (0-30, 31-60, 61-90, >90 days)**
+- **AR > 90 Days %**
+- **Days in AR Calculation**
+- **Forecasting Uncollected AR Risk**
+
+### Claims & Denial Metrics
+
+- **Claim Acceptance Rate**
+- **Denial Patterns by Procedure Code (CPT)**
+
+> 📎 All queries are in the `Gold Layer Queries.sql/` file.
+
+---
+
+## Strategic Impact
+
+By identifying revenue leaks early and tracking AR aging effectively, healthcare providers can:
+- Boost cash flow with faster collections
+- Reduce claim denials through proactive analysis
+- Identify and empower high-performing providers
+- Optimize billing and follow-up workflows for better patient engagement
+
+---
+### References
+1. **Accounts Receivable Management in Healthcare: The Doctor's Complete Guide**  
+   [https://mdmanagementgroup.com/healthcare-accounts-receivable-management/](https://mdmanagementgroup.com/healthcare-accounts-receivable-management/)
+
+2. **Revenue Cycle Metrics: 21 Best RCM KPIs**  
+   [https://www.mdclarity.com/blog/revenue-cycle-metrics-rcm-kpis](https://www.mdclarity.com/blog/revenue-cycle-metrics-rcm-kpis)
+
+3. **What Are ICD and CPT Codes—and Why Are They Important?**  
+   [https://www.simplepractice.com/blog/icd-codes-and-cpt-codes/](https://www.simplepractice.com/blog/icd-codes-and-cpt-codes/)

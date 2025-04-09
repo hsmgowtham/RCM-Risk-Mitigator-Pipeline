@@ -9,6 +9,7 @@
 # MAGIC NPI long,
 # MAGIC datasource string
 # MAGIC )
+# MAGIC Using DELTA
 
 # COMMAND ----------
 

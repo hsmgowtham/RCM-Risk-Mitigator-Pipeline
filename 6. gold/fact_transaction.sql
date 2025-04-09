@@ -17,8 +17,11 @@ create table if not exists gold.fact_transactions
   AmountType string,
   ClaimID string,
   datasource string,
-  refreshed_at timestamp
+  refreshed_at timestamp,
+  ServiceYear INT
 )
+USING DELTA
+PARTITIONED BY (ServiceYear);
 
 -- COMMAND ----------
 
@@ -44,7 +47,8 @@ select
   t.AmountType,
   t.ClaimID,
   t.datasource,
-  current_timestamp()
+  current_timestamp(),
+  YEAR(t.ServiceDate) AS ServiceYear
   from silver.transactions t 
   where t.is_current=true and t.is_quarantined=false
 

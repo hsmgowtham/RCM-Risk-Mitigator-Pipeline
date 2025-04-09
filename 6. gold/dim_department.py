@@ -12,6 +12,7 @@
 # MAGIC Name string,
 # MAGIC datasource string
 # MAGIC )
+# MAGIC Using DELTA
 
 # COMMAND ----------
 
