@@ -1,3 +1,53 @@
+-- ================================================
+-- Accounts Receivable (AR) Analysis
+-- ================================================
+
+-- ++ AR Aging Buckets
+-- Overview: Breaks down outstanding AR into standard aging buckets to evaluate risk and liquidity.
+SELECT 
+  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) BETWEEN 0 AND 30 THEN Amount - PaidAmount ELSE 0 END) AS AR_0_30_Days,
+  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) BETWEEN 31 AND 60 THEN Amount - PaidAmount ELSE 0 END) AS AR_31_60_Days,
+  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) BETWEEN 61 AND 90 THEN Amount - PaidAmount ELSE 0 END) AS AR_61_90_Days,
+  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) AS AR_Over_90_Days,
+  (SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) / NULLIF(SUM(Amount - PaidAmount), 0)) * 100 AS AR_Over_90_Percentage
+FROM gold.fact_transactions
+WHERE Amount - PaidAmount > 0;
+
+-- ++ AR Over 90 Days Percentage
+-- Overview: Calculates percentage of AR balance that is overdue by more than 90 days, flagging financial risk.
+SELECT 
+  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) AS AR_Over_90_Days,
+  SUM(Amount - PaidAmount) AS Total_AR,
+  (SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) / SUM(Amount - PaidAmount)) * 100 AS AR_Over_90_Percentage
+FROM gold.fact_transactions
+WHERE Amount - PaidAmount > 0;
+
+-- ++ Days in AR Calculation
+-- Overview: Derives the average number of days it takes to collect payment, a key RCM performance metric.
+SELECT 
+  SUM(Amount - PaidAmount) / NULLIF(SUM(Amount) / COUNT(DISTINCT ServiceDate), 0) AS Days_In_AR
+FROM gold.fact_transactions
+WHERE Amount - PaidAmount > 0;
+
+-- ++ Average Days to Collect Payments
+-- Overview: Tracks the average payment delay in days, revealing cash flow efficiency.
+SELECT 
+  AVG(DATEDIFF(PaidDate, ServiceDate)) AS Avg_Days_To_Collect
+FROM gold.fact_transactions
+WHERE PaidAmount > 0;
+
+-- ++ Predicting Future AR Risk
+-- Overview: Uses historical AR aging to forecast risk of uncollected payments in the next 90 days.
+WITH Historical_Trend AS (
+  SELECT 
+    DATEDIFF(CURRENT_DATE(), PaidDate) AS Days_Old,
+    Amount - PaidAmount AS Pending_AR
+  FROM gold.fact_transactions
+  WHERE Amount - PaidAmount > 0
+)
+SELECT 
+  SUM(CASE WHEN Days_Old + 90 > 90 THEN Pending_AR * 0.73 ELSE Pending_AR END) AS Estimated_Uncollected_AR
+FROM Historical_Trend;
 
 -- ================================================
 -- Revenue & Performance Analytics
@@ -69,56 +119,7 @@ FROM gold.fact_transactions
 GROUP BY YYYYMM
 ORDER BY YYYYMM;
 
--- ================================================
--- Accounts Receivable (AR) Analysis
--- ================================================
 
--- ++ AR Aging Buckets
--- Overview: Breaks down outstanding AR into standard aging buckets to evaluate risk and liquidity.
-SELECT 
-  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) BETWEEN 0 AND 30 THEN Amount - PaidAmount ELSE 0 END) AS AR_0_30_Days,
-  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) BETWEEN 31 AND 60 THEN Amount - PaidAmount ELSE 0 END) AS AR_31_60_Days,
-  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) BETWEEN 61 AND 90 THEN Amount - PaidAmount ELSE 0 END) AS AR_61_90_Days,
-  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) AS AR_Over_90_Days,
-  (SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) / NULLIF(SUM(Amount - PaidAmount), 0)) * 100 AS AR_Over_90_Percentage
-FROM gold.fact_transactions
-WHERE Amount - PaidAmount > 0;
-
--- ++ AR Over 90 Days Percentage
--- Overview: Calculates percentage of AR balance that is overdue by more than 90 days, flagging financial risk.
-SELECT 
-  SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) AS AR_Over_90_Days,
-  SUM(Amount - PaidAmount) AS Total_AR,
-  (SUM(CASE WHEN DATEDIFF(CURRENT_DATE(), PaidDate) > 90 THEN Amount - PaidAmount ELSE 0 END) / SUM(Amount - PaidAmount)) * 100 AS AR_Over_90_Percentage
-FROM gold.fact_transactions
-WHERE Amount - PaidAmount > 0;
-
--- ++ Days in AR Calculation
--- Overview: Derives the average number of days it takes to collect payment, a key RCM performance metric.
-SELECT 
-  SUM(Amount - PaidAmount) / NULLIF(SUM(Amount) / COUNT(DISTINCT ServiceDate), 0) AS Days_In_AR
-FROM gold.fact_transactions
-WHERE Amount - PaidAmount > 0;
-
--- ++ Average Days to Collect Payments
--- Overview: Tracks the average payment delay in days, revealing cash flow efficiency.
-SELECT 
-  AVG(DATEDIFF(PaidDate, ServiceDate)) AS Avg_Days_To_Collect
-FROM gold.fact_transactions
-WHERE PaidAmount > 0;
-
--- ++ Predicting Future AR Risk
--- Overview: Uses historical AR aging to forecast risk of uncollected payments in the next 90 days.
-WITH Historical_Trend AS (
-  SELECT 
-    DATEDIFF(CURRENT_DATE(), PaidDate) AS Days_Old,
-    Amount - PaidAmount AS Pending_AR
-  FROM gold.fact_transactions
-  WHERE Amount - PaidAmount > 0
-)
-SELECT 
-  SUM(CASE WHEN Days_Old + 90 > 90 THEN Pending_AR * 0.73 ELSE Pending_AR END) AS Estimated_Uncollected_AR
-FROM Historical_Trend;
 
 -- ================================================
 -- Claims & Denial Analytics
