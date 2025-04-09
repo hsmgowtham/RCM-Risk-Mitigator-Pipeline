@@ -101,6 +101,13 @@ The file includes key columns such as Procedure Code Category, CPT Codes, Proced
 
 ## Sample KPIs & Queries
 
+### Accounts Receivable (AR) Analysis
+
+- **AR Aging Buckets (0-30, 31-60, 61-90, >90 days)**
+- **AR > 90 Days %**
+- **Days in AR Calculation**
+- **Forecasting Uncollected AR Risk**
+
 ### Revenue & Provider Performance
 
 - **Total Charges per Provider by Department**
@@ -111,13 +118,6 @@ The file includes key columns such as Procedure Code Category, CPT Codes, Proced
 
 - **Collection % by Provider**
 - **Monthly Payment Collection Trend**
-
-### Accounts Receivable (AR) Analysis
-
-- **AR Aging Buckets (0-30, 31-60, 61-90, >90 days)**
-- **AR > 90 Days %**
-- **Days in AR Calculation**
-- **Forecasting Uncollected AR Risk**
 
 ### Claims & Denial Metrics
 
