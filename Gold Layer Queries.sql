@@ -66,6 +66,11 @@ GROUP BY ALL;
 
 -- ++ Monthly Provider Billing Summary for 2024
 -- Overview: Tracks monthly billing and payment trends for providers by department for the year 2024.
+
+-- Zordering the Frequently queried column ServiceDate to fetch the results faster
+OPTIMIZE gold.fact_transactions
+ZORDER BY (ServiceDate);
+
 SELECT
   CONCAT(p.firstname, ' ', p.LastName) AS Provider_Name,
   dd.Name AS Dept_Name,
