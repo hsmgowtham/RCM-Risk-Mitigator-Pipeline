@@ -40,17 +40,36 @@ The pipeline is built using **Medallion Architecture** (Landing → Bronze → S
 - **Silver Layer**  
   Transformations in **Azure Databricks (PySpark)**:
   - Schema unification
-  - SCD2 for patient records
+  - SCD2 Implementation
   - Data quality checks (nulls, type mismatch)
   - Metadata logging
 
 - **Gold Layer**  
   Analytical **Fact/Dim models** for KPIs and dashboards.
 ---
+### Sources
+**API's**
+1. International classification of Diseases (ICD) Code API - This API contains columns like ICD Code, Description, Category, and Diagnosis Type, etc.
+2. National Provider Identifier API - This API contains columns like NPI ID, First Name, Last Name, Position, Organisation Name, Last Updated, and Refreshed At, etc.
+
+**Landing File Drops**
+1. Hospital_Claim.csv - The file includes important columns such as ClaimID, PatientID, ProviderID, ServiceDate, ClaimAmount, PaidAmount, ClaimStatus, and PayorType, which capture essential details about claims, payments, and claim status in the healthcare process.
+2. CPT_Code.csv - Current Procedural Terminology, a standardized system used to code and describe medical, surgical, and diagnostic services and procedures.
+The file includes key columns such as Procedure Code Category, CPT Codes, Procedure Code Descriptions, and Code Status, which provide details about medical procedures, their codes, descriptions, and status.
+
+**Azure SQL DB**
+1. Patients - Patient Information
+2. Encounters - Patient encounter with provider information (encounter type, date, providerid, department_id, etc.)
+3. Providers - Provider Information (general information, department, specilization, etc.)
+4. Departments - Department Informtion
+5. Transactions - Transaction made by patient for services received (id, type, servicedate, provider, visittype, amount, amountype, claim, etc.)
+
+---
 ### High Level Design
 <img width="909" alt="image" src="https://github.com/user-attachments/assets/9f598991-202e-4f10-8237-ded445dafe3a" />
 
 ---
+
 ### Key Features
 
 - **Metadata-driven** design with external configuration files
@@ -70,6 +89,7 @@ The pipeline is built using **Medallion Architecture** (Landing → Bronze → S
 | **Azure SQL Database** | Source system for structured data |
 | **Delta Lake**           | Storage format for Silver/Gold     |
 | **ADLS Gen2**            | Cloud data lake for raw & curated layers |
+| **Azure Key Vault**      | Storing Azure service access keys and credentials |
 | **SQL, Python**          | Logic & analytics                  |
 | **Git**                  | Version control                    |
 
@@ -100,7 +120,7 @@ The pipeline is built using **Medallion Architecture** (Landing → Bronze → S
 - **Claim Acceptance Rate**
 - **Denial Patterns by Procedure Code (CPT)**
 
-> 📎 All queries are in the `Gold Layer Queries.sql/` file.
+> 📎 All queries are in the `Gold Layer Queries.sql` file.
 
 ---
 
