@@ -69,6 +69,10 @@ The file includes key columns such as Procedure Code Category, CPT Codes, Proced
 <img width="909" alt="image" src="https://github.com/user-attachments/assets/9f598991-202e-4f10-8237-ded445dafe3a" />
 
 ---
+### ER Diagram - Facts and Dimension Tables
+<img width="909" alt="image" src="https://github.com/user-attachments/assets/682099a4-244a-433a-8a28-a76d83a337d2" />
+
+---
 
 ### Key Features
 
