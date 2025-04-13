@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-In the healthcare industry, **Accounts Receivable (AR)** plays a critical role in determining the financial health of hospitals and clinics. When AR goes uncollected — especially past **90 days**, it can significantly disrupt cash flow and impact patient services.
+In the healthcare industry, **Accounts Receivable (AR)** play a critical role in determining the financial health of hospitals and clinics. When AR goes uncollected — especially past **90 days**, it can significantly disrupt cash flow and impact patient services.
 
 > Industry statistics:
 > - 93.4% collected within 30 days  
@@ -29,7 +29,7 @@ The pipeline is built using **Medallion Architecture** (Landing → Bronze → S
 
 ## Architecture & Workflow
 
-### **Medallion Architecture Breakdown:**
+### **Medallion Architecture Breakdown**
 
 - **Landing Layer**  
   Raw flat files from APIs, Azure SQL, and other external sources.
@@ -49,8 +49,8 @@ The pipeline is built using **Medallion Architecture** (Landing → Bronze → S
 ---
 ### Sources
 **API's**
-1. International classification of Diseases (ICD) Code API - This API contains columns like ICD Code, Description, Category, and Diagnosis Type, etc.
-2. National Provider Identifier API - This API contains columns like NPI ID, First Name, Last Name, Position, Organisation Name, Last Updated, and Refreshed At, etc.
+1. International Classification of Diseases (ICD) Code API - This API contains columns like ICD Code, Description, Category, Diagnosis Type, etc.
+2. National Provider Identifier API - This API contains columns like NPI ID, First Name, Last Name, Position, Organization Name, Last Updated, and Refreshed At, etc.
 
 **Landing File Drops**
 1. Hospital_Claim.csv - The file includes important columns such as ClaimID, PatientID, ProviderID, ServiceDate, ClaimAmount, PaidAmount, ClaimStatus, and PayorType, which capture essential details about claims, payments, and claim status in the healthcare process.
@@ -58,14 +58,16 @@ The pipeline is built using **Medallion Architecture** (Landing → Bronze → S
 The file includes key columns such as Procedure Code Category, CPT Codes, Procedure Code Descriptions, and Code Status, which provide details about medical procedures, their codes, descriptions, and status.
 
 **Azure SQL DB**
-1. Patients - Patient Information
+1. Patient Information
 2. Encounters - Patient encounter with provider information (encounter type, date, providerid, department_id, etc.)
-3. Providers - Provider Information (general information, department, specilization, etc.)
-4. Departments - Department Informtion
+3. Providers - Provider Information (general information, department, specialization, etc.)
+4. Departments - Department Information
 5. Transactions - Transaction made by patient for services received (id, type, servicedate, provider, visittype, amount, amountype, claim, etc.)
 
+Note: Source Data on SQL DB is generated using the Faker Module. There might not be any nulls and proper relationships between these tables. The objective of this project was to design and build end to end using best practices
+
 ---
-### High Level Design
+### High-Level Design
 <img width="909" alt="image" src="https://github.com/user-attachments/assets/9f598991-202e-4f10-8237-ded445dafe3a" />
 
 ---
